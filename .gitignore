@@ -1,2 +1,5 @@
 # Ignore database files
 *.db
+
+# Node modules
+node_modules
