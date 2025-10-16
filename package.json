@@ -1,10 +1,11 @@
 {
-  "name": "testing_all_processes",
+  "name": "fabios",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo 'No tests yet'"
+    "test": "echo 'No tests yet'",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,14 @@
   "bugs": {
     "url": "https://github.com/drodriguez881/Testing_All_Processes/issues"
   },
-  "homepage": "https://github.com/drodriguez881/Testing_All_Processes#readme"
+  "homepage": "https://github.com/drodriguez881/Testing_All_Processes#readme",
+  "dependencies": {
+    // Server imports
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+    // Client imports (currently none)
+  }
 }
