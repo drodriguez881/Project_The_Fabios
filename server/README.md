@@ -1,4 +1,9 @@
+# Initial downloads
+
+At root directory:
+  npm install
+
 # Running the server
 
 At /server directory:
-  node server.js
+  node index.js

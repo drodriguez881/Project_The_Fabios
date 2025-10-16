@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo 'No tests yet'",
-    "start": "node server.js"
+    "test": "echo 'No tests yet'"
   },
   "repository": {
     "type": "git",
@@ -19,13 +18,4 @@
     "url": "https://github.com/drodriguez881/Testing_All_Processes/issues"
   },
   "homepage": "https://github.com/drodriguez881/Testing_All_Processes#readme",
-  "dependencies": {
-    // Server imports
-    "bcrypt": "^5.1.1",
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
-    // Client imports (currently none)
-  }
 }
