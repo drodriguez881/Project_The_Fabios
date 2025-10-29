@@ -24,11 +24,11 @@ body {
 .left-side {
   flex: 1;
   background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-  color: white;                   
+  color: white;
   display: flex;
   flex-direction: column;
-  justify-content: center;        
-  align-items: center;           
+  justify-content: center;
+  align-items: center;
   text-align: center;
   padding: 40px;
   box-sizing: border-box;
@@ -70,8 +70,8 @@ body {
   background: var(--orange);
   display: flex;
   flex-direction: column;
-  justify-content: center;    
-  align-items: center;        
+  justify-content: center;
+  align-items: center;
   padding: 40px;
   box-sizing: border-box;
 }
@@ -80,7 +80,7 @@ form {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 360px;   
+  max-width: 360px;
   align-items: center;
 }
 
