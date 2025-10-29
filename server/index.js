@@ -93,6 +93,39 @@ app.post('/login', async (req, res) => {
 });
 
 
+// [POST] /delete - Remove user
+app.post('/delete', async (req, res) => {
+  const { email, password } = req.body;
+
+  // Missing info
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required.' });
+  }
+
+  try {
+    // Find the user by email
+    const user = await db.get('SELECT * FROM users WHERE email = ?', email);
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password.' });
+    }
+
+    // Compare the submitted password with the stored hash
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+
+    if (isMatch) {
+      console.log(`User deleted in: ${email}`);
+      await db.run('DELETE FROM users WHERE id = ?', user.id);
+      res.status(200).json({ message: `Goodbye, ${email}!` });
+    } else {
+      res.status(401).json({ message: 'Invalid email or password.' });
+    }
+  } catch (err) {
+    console.error('Delete Error:', err);
+    res.status(500).json({ message: 'An error occurred during deletion.' });
+  }
+});
+
 // Actual main
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
