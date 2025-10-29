@@ -5,12 +5,24 @@ function App() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault()
-    console.log('Signed up with:', { email, password })
-    alert(`Account created for ${email}`)
-    setEmail('')
-    setPassword('')
+
+    const follow_up = await fetch('http://localhost:3001/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, password }),
+    })
+
+    if (follow_up.ok) {
+      console.log('Signed up with:', { email, password })
+      alert(`Account created for ${email}`)
+      setEmail('')
+      setPassword('')
+    }
+    else {
+      alert('Error: Account already exists')
+    }
   }
 
   return (
