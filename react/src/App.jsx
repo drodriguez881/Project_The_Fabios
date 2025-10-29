@@ -19,7 +19,10 @@ function App() {
       if (!response.ok) {
       }
 
-      return data; 
+      const success = response.ok;
+      const result = { success, data };
+
+      return result; 
   };
 
   const handleSignUp = async () => {
@@ -27,13 +30,23 @@ function App() {
       alert('Please enter both email and password.');
       return;
     }
-    const data = await handleApiRequest('/register', { email, password });
-    
-    if (data) {
-      alert(data.message);
-      setEmail('');
-      setPassword('');
+    const { success, data } = await handleApiRequest('/register', { email, password });
+
+    const email_format = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!email_format.test(email)) {
+      alert('Error: Invalid email format, must be in this format -> _@_._');
+      return;
     }
+    else {
+      if (success) {
+        alert(data.message);
+        setEmail('');
+        setPassword('');
+      }
+      else {
+        alert(data.message);
+      }
+    }  
   };
 
   const handleLogin = async () => {
@@ -41,9 +54,14 @@ function App() {
       alert('Please enter both email and password.');
       return;
     }
-    const data = await handleApiRequest('/login', { email, password });
+    const { success, data } = await handleApiRequest('/login', { email, password });
+
+    if (!success) {
+      alert('Error: Invalid email or password');
+      return;
+    }  
     
-    if (data) {
+    if (success) {
       alert(data.message); 
       setLoggedInEmail(email);
       setEmail('');
