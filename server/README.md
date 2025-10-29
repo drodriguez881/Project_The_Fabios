@@ -1,6 +1,6 @@
 # Initial downloads
 
-At root directory:
+At /server directory:
   npm install
 
 # Running the server
