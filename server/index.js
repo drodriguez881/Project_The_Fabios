@@ -27,6 +27,20 @@ await db.exec(`
   )
 `);
 
+// Create reviews table
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    building TEXT NOT NULL,
+    cleanliness INTEGER,
+    supplies INTEGER,
+    privacy INTEGER,
+    text TEXT,
+    user TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
 console.log('Db is made');
 
 // [POST] /register - New users
@@ -123,6 +137,36 @@ app.post('/delete', async (req, res) => {
   } catch (err) {
     console.error('Delete Error:', err);
     res.status(500).json({ message: 'An error occurred during deletion.' });
+  }
+});
+
+// [GET] /reviews?building= - get reviews for a building
+app.get('/reviews', async (req, res) => {
+  const building = req.query.building;
+  if (!building) return res.status(400).json({ message: 'Missing building query param' });
+  try {
+    const rows = await db.all('SELECT id, building, cleanliness, supplies, privacy, text, user, created_at FROM reviews WHERE building = ? ORDER BY created_at DESC', building);
+    res.status(200).json({ reviews: rows });
+  } catch (err) {
+    console.error('Get reviews error', err);
+    res.status(500).json({ message: 'Error fetching reviews' });
+  }
+});
+
+// [POST] /reviews - submit a review
+app.post('/reviews', async (req, res) => {
+  const { building, cleanliness, supplies, privacy, text, user } = req.body;
+  if (!building) return res.status(400).json({ message: 'Missing building' });
+  try {
+    const result = await db.run(
+      'INSERT INTO reviews (building, cleanliness, supplies, privacy, text, user) VALUES (?, ?, ?, ?, ?, ?)',
+      [building, cleanliness || null, supplies || null, privacy || null, text || '', user || null]
+    );
+    const inserted = await db.get('SELECT id, building, cleanliness, supplies, privacy, text, user, created_at FROM reviews WHERE id = ?', result.lastID);
+    res.status(201).json({ review: inserted });
+  } catch (err) {
+    console.error('Post review error', err);
+    res.status(500).json({ message: 'Error saving review' });
   }
 });
 
