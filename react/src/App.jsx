@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-// Helper to render stars for display
 function renderStars(count) {
   return '★★★★★☆☆☆☆☆'.slice(5 - count, 10 - count);
 }
 
-// Interactive star selector component
 function StarSelector({ value, onChange }) {
   return (
     <span style={{ cursor: 'pointer', fontSize: '1.3em', color: '#f5b301', verticalAlign: 'middle' }}>
@@ -116,12 +114,10 @@ function App() {
     const saved = localStorage.getItem('bathroomReviews');
     return saved ? JSON.parse(saved) : defaultReviews;
   });
-  // Save reviews to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('bathroomReviews', JSON.stringify(reviews));
   }, [reviews]);
 
-  // Fetch reviews for a building from server and merge into state
   const fetchReviewsFromServer = async (building) => {
     try {
       const res = await fetch(`${API_URL}/reviews?building=${encodeURIComponent(building)}`);
@@ -131,19 +127,17 @@ function App() {
         setReviews(prev => ({ ...prev, [building]: body.reviews }));
       }
     } catch (err) {
-      // ignore network errors; keep local reviews
+      
       console.warn('Could not fetch reviews from server', err);
     }
   };
 
-  // When the selected building changes, try to load its reviews from server
   useEffect(() => {
     if (selectedBuilding) {
       fetchReviewsFromServer(selectedBuilding);
     }
   }, [selectedBuilding]);
 
-  // Submit review to server (with fallback to local update on failure)
   async function handleSubmitReview(e) {
     e.preventDefault();
     const payload = {
@@ -164,10 +158,10 @@ function App() {
       if (!res.ok) throw new Error('server error');
       const body = await res.json();
       const newReview = body.review;
-      // update local state with server-saved review
+      
       setReviews(prev => ({ ...prev, [selectedBuilding]: [ ...(prev[selectedBuilding] || []), newReview ] }));
     } catch (err) {
-      // fallback: add review locally
+      
       setReviews(prev => ({ ...prev, [selectedBuilding]: [ ...(prev[selectedBuilding] || []), payload ] }));
     }
 
@@ -256,7 +250,7 @@ function App() {
                 )}
                 <button
                   style={{ marginTop: '8px', padding: '10px 18px', background: 'var(--blue-1)', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 600, cursor: 'pointer' }}
-                  onClick={() => { setShowReviewForm(true); setReviewText(""); setReviewSubmitted(false); setStarRatings({ cleanliness: 0, supplies: 0, privacy: 0 }); }}
+                  onClick={() => { setShowReviewForm(true); setReviewText(""); setReviewSubmittedFor(null); setStarRatings({ cleanliness: 0, supplies: 0, privacy: 0 }); }}
                 >
                   Submit a Review
                 </button>
@@ -302,8 +296,7 @@ function App() {
                 Thank you for submitting your review for <strong>{selectedBuilding}</strong>!
               </div>
             )}
-            {/* StarSelector and renderStars helpers */}
-            {/* Place these outside the App component in the same file */}
+            
           </div>
         </div>
       </div>
