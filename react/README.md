@@ -6,4 +6,9 @@ At /react directory:
 # Running the server
 
 At /react directory:
-  node index.js
+  npm dev run
+  
+# Adding images
+
+At /react/img directory:
+  add a jpg that matches the building name
