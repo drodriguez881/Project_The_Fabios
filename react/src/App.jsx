@@ -27,10 +27,26 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loggedInEmail, setLoggedInEmail] = useState(null);
-  const API_URL = 'http://localhost:3001';
+
+  const makeRequest = async (endpoint, options = {}) => {
+    // The main will be db.serralq.dev
+    // The saku.serralq.dev is only here since it takes time for dns records to be updated
+    //   and I already had this dns record propogated
+    // The localhost is for testing purposes
+    const urls = ['http://localhost:3001', 'https://db.serralq.dev', 'https://saku.serralq.dev'];
+    for (const url of urls) {
+      try {
+        return await fetch(`${url}${endpoint}`, options);
+      } catch (err) {
+        console.warn(`Connection failed for ${url}`, err);
+      }
+    }
+    throw new Error('All connection attempts failed');
+  };
 
   const handleApiRequest = async (endpoint, body) => {
-      const response = await fetch(`${API_URL}${endpoint}`, {
+    try {
+      const response = await makeRequest(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -38,13 +54,10 @@ function App() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-      }
-
-      const success = response.ok;
-      const result = { success, data };
-
-      return result; 
+      return { success: response.ok, data };
+    } catch (err) {
+      return { success: false, data: { message: 'Network Error: Could not connect to server.' } };
+    }
   };
 
   const handleSignUp = async () => {
@@ -79,10 +92,10 @@ function App() {
     if (!success) {
       alert('Error: Invalid email or password');
       return;
-    }  
-    
+    }
+
     if (success) {
-      alert(data.message); 
+      alert(data.message);
       setLoggedInEmail(email);
       setEmail('');
       setPassword('');
@@ -125,9 +138,9 @@ function App() {
 
   const handleDeleteAccount = async () => {
     if (!deletePassword) return alert("Please enter your password to confirm.");
-    
+
     const { success, data } = await handleApiRequest('/delete', { email: loggedInEmail, password: deletePassword });
-    
+
     if (success) {
       alert(data.message);
       setLoggedInEmail(null);
@@ -140,14 +153,14 @@ function App() {
 
   const fetchReviewsFromServer = async (building) => {
     try {
-      const res = await fetch(`${API_URL}/reviews?building=${encodeURIComponent(building)}`);
+      const res = await makeRequest(`/reviews?building=${encodeURIComponent(building)}`);
       if (!res.ok) throw new Error('fetch failed');
       const body = await res.json();
       if (body && Array.isArray(body.reviews)) {
         setReviews(prev => ({ ...prev, [building]: body.reviews }));
       }
     } catch (err) {
-      
+
       console.warn('Could not fetch reviews from server', err);
     }
   };
@@ -170,7 +183,7 @@ function App() {
     };
 
     try {
-      const res = await fetch(`${API_URL}/reviews`, {
+      const res = await makeRequest(`/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -178,11 +191,11 @@ function App() {
       if (!res.ok) throw new Error('server error');
       const body = await res.json();
       const newReview = body.review;
-      
-      setReviews(prev => ({ ...prev, [selectedBuilding]: [ ...(prev[selectedBuilding] || []), newReview ] }));
+
+      setReviews(prev => ({ ...prev, [selectedBuilding]: [...(prev[selectedBuilding] || []), newReview] }));
     } catch (err) {
-      
-      setReviews(prev => ({ ...prev, [selectedBuilding]: [ ...(prev[selectedBuilding] || []), payload ] }));
+
+      setReviews(prev => ({ ...prev, [selectedBuilding]: [...(prev[selectedBuilding] || []), payload] }));
     }
 
     setShowReviewForm(false);
@@ -250,8 +263,8 @@ function App() {
                   <button onClick={() => setShowDeleteConfirm(true)} style={{ width: '100%', padding: '10px', background: '#ff4444', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}>Delete Account</button>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <input 
-                      type="password" 
+                    <input
+                      type="password"
                       placeholder="Confirm Password"
                       value={deletePassword}
                       onChange={(e) => setDeletePassword(e.target.value)}
@@ -333,7 +346,7 @@ function App() {
                 Thank you for submitting your review for <strong>{selectedBuilding}</strong>!
               </div>
             )}
-            
+
           </div>
         </div>
       </div>
@@ -349,7 +362,7 @@ function App() {
 
       <div className="right-side">
         <h2>Login or Sign Up</h2>
-        
+
         <div style={{ width: '100%', maxWidth: '360px' }}>
           <input
             type="email"
