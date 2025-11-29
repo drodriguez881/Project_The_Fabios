@@ -114,6 +114,7 @@ app.post('/delete', async (req, res) => {
 
     if (isMatch) {
       console.log(`User deleted in: ${email}`);
+      await db.run('DELETE FROM reviews WHERE user = ?', email);
       await db.run('DELETE FROM users WHERE id = ?', user.id);
       res.status(200).json({ message: `Goodbye, ${email}!` });
     } else {
