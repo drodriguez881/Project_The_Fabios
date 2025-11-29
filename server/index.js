@@ -9,7 +9,9 @@ const PORT = 3001;
 const SALT_ROUNDS = 10;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://fabio.serralq.dev'
+}));
 
 const db = await open({
   filename: './database.db',
