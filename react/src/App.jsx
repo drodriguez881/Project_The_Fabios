@@ -209,6 +209,7 @@ function App() {
       "Computer Sciences",
       "Nuclear Sciences",
       "Materials Engineering",
+      "Matherly Hall",
       "Mechanical and Aerospace Engineering B",
       "Mechanical and Aerospace Engineering C",
       "Nuclear Reactor",
@@ -281,6 +282,13 @@ function App() {
             {selectedBuilding && !showReviewForm && !reviewSubmittedFor && (
               <div style={{ background: '#f5f5f5', borderRadius: '8px', padding: '24px', maxWidth: '600px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}>
                 <h2>{selectedBuilding} Bathroom Reviews</h2>
+                <img
+                  src={`../img/${selectedBuilding}.jpg`}
+                  alt={selectedBuilding}
+                  style={{ width: '100%', borderRadius: '8px', marginBottom: '16px', display: 'none' }}
+                  onLoad={(e) => e.target.style.display = 'block'}
+                  onError={(e) => e.target.style.display = 'none'}
+                />
                 {reviews[selectedBuilding] && reviews[selectedBuilding].length > 0 ? (
                   <ul style={{ padding: 0, listStyle: 'none', marginBottom: '24px' }}>
                     {reviews[selectedBuilding].map((r, idx) => (
