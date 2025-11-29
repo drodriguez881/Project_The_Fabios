@@ -92,6 +92,8 @@ function App() {
   const handleLogout = () => {
     setLoggedInEmail(null);
     alert('Logged out successfully.');
+    setShowDeleteConfirm(false);
+    setDeletePassword('');
   };
 
   const [selectedBuilding, setSelectedBuilding] = useState('Joseph Weil Hall');
@@ -117,6 +119,24 @@ function App() {
   useEffect(() => {
     localStorage.setItem('bathroomReviews', JSON.stringify(reviews));
   }, [reviews]);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) return alert("Please enter your password to confirm.");
+    
+    const { success, data } = await handleApiRequest('/delete', { email: loggedInEmail, password: deletePassword });
+    
+    if (success) {
+      alert(data.message);
+      setLoggedInEmail(null);
+      setShowDeleteConfirm(false);
+      setDeletePassword('');
+    } else {
+      alert(data.message);
+    }
+  };
 
   const fetchReviewsFromServer = async (building) => {
     try {
@@ -224,6 +244,23 @@ function App() {
               ))}
               <li style={{ marginTop: '32px' }}>
                 <button onClick={handleLogout} style={{ width: '100%', padding: '10px', background: '#fff', color: 'var(--blue-1)', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
+              </li>
+              <li style={{ marginTop: '12px' }}>
+                {!showDeleteConfirm ? (
+                  <button onClick={() => setShowDeleteConfirm(true)} style={{ width: '100%', padding: '10px', background: '#ff4444', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}>Delete Account</button>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <input 
+                      type="password" 
+                      placeholder="Confirm Password"
+                      value={deletePassword}
+                      onChange={(e) => setDeletePassword(e.target.value)}
+                      style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+                    />
+                    <button onClick={handleDeleteAccount} style={{ width: '100%', padding: '8px', background: '#cc0000', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}>Confirm Delete</button>
+                    <button onClick={() => { setShowDeleteConfirm(false); setDeletePassword(''); }} style={{ width: '100%', padding: '8px', background: '#888', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}>Cancel</button>
+                  </div>
+                )}
               </li>
             </ul>
           </div>
