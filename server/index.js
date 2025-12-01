@@ -9,7 +9,9 @@ const PORT = 3001;
 const SALT_ROUNDS = 10;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://fabio.serralq.dev'
+}));
 
 const db = await open({
   filename: './database.db',
@@ -112,6 +114,7 @@ app.post('/delete', async (req, res) => {
 
     if (isMatch) {
       console.log(`User deleted in: ${email}`);
+      await db.run('DELETE FROM reviews WHERE user = ?', email);
       await db.run('DELETE FROM users WHERE id = ?', user.id);
       res.status(200).json({ message: `Goodbye, ${email}!` });
     } else {
