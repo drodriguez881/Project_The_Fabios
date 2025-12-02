@@ -23,6 +23,25 @@ function StarSelector({ value, onChange }) {
   );
 }
 
+function starAverage(buildingReviews) {
+  if (!buildingReviews || buildingReviews.length === 0) {
+    return { cleanliness: 0, supplies: 0, privacy: 0 };
+  }
+
+  const totalSum = buildingReviews.reduce((totalReviews, review) => {
+    totalReviews.cleanliness += review.cleanliness;
+    totalReviews.supplies += review.supplies;
+    totalReviews.privacy += review.privacy;
+    return totalReviews;
+  }, { cleanliness: 0, supplies: 0, privacy: 0 });
+
+  return {
+    cleanliness: Math.round((totalSum.cleanliness / buildingReviews.length) * 10) / 10,
+    supplies: Math.round((totalSum.supplies / buildingReviews.length) * 10) / 10,
+    privacy: Math.round((totalSum.privacy / buildingReviews.length) * 10) / 10,
+  };
+}
+
 function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -157,7 +176,7 @@ function App() {
       if (!res.ok) throw new Error('fetch failed');
       const body = await res.json();
       if (body && Array.isArray(body.reviews)) {
-        setReviews(prev => ({ ...prev, [building]: body.reviews }));
+        setReviews(prev => ({ ...prev, [building]: body.reviews.slice().reverse() }));
       }
     } catch (err) {
 
@@ -282,6 +301,11 @@ function App() {
             {selectedBuilding && !showReviewForm && !reviewSubmittedFor && (
               <div style={{ background: '#f5f5f5', borderRadius: '8px', padding: '24px', maxWidth: '600px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}>
                 <h2>{selectedBuilding} Bathroom Reviews</h2>
+                <div style={{ fontWeight: '800', textAlign: 'left' }}>
+                  <div>Average Cleanliness: {renderStars(Math.round(starAverage(reviews[selectedBuilding]).cleanliness))} {starAverage(reviews[selectedBuilding]).cleanliness}</div>
+                  <div>Average Supplies: {renderStars(Math.round(starAverage(reviews[selectedBuilding]).supplies))} {starAverage(reviews[selectedBuilding]).supplies}</div>
+                  <div>Average Privacy: {renderStars(Math.round(starAverage(reviews[selectedBuilding]).privacy))} {starAverage(reviews[selectedBuilding]).privacy}</div>
+                </div>
                 <img
                   src={`../img/${selectedBuilding}.jpg`}
                   alt={selectedBuilding}
@@ -293,7 +317,6 @@ function App() {
                   <ul style={{ padding: 0, listStyle: 'none', marginBottom: '24px' }}>
                     {reviews[selectedBuilding].map((r, idx) => (
                       <li key={idx} style={{ marginBottom: '18px', background: '#fff', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-                        <div style={{ marginBottom: '6px', fontWeight: 500 }}>{r.user || 'Anonymous'}</div>
                         <div style={{ marginBottom: '4px' }}><strong>Cleanliness:</strong> {renderStars(r.cleanliness)}</div>
                         <div style={{ marginBottom: '4px' }}><strong>Supplies:</strong> {renderStars(r.supplies)}</div>
                         <div style={{ marginBottom: '4px' }}><strong>Privacy:</strong> {renderStars(r.privacy)}</div>
